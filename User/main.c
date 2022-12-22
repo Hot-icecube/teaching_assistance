@@ -89,8 +89,6 @@ int main(void)
 			{
 				line += LINE_SIZE;//отй╬н╩жцобрф
 				receive_num++;
-			
-
 			}
 		}	
 		GBK_Show_Str(8,line, 500,500,  USART3_RX_BUF,16, RED, WHITE, 0);

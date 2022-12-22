@@ -437,6 +437,11 @@
               <FileType>1</FileType>
               <FilePath>..\HardWare\LCD\font.c</FilePath>
             </File>
+            <File>
+              <FileName>rtc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HardWare\RTC\rtc.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
