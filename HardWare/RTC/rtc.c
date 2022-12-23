@@ -50,7 +50,7 @@ u8 RTC_Init(void)
 		RTC_WaitForSynchro();		//等待寄存器同步完成
 		
 		//RTC配置
-		RTC_ITConfig(RTC_IT_SEC, ENABLE);	//
+		RTC_ITConfig(RTC_IT_SEC, ENABLE);	
 		RTC_WaitForLastTask();
 		RTC_WaitForSynchro();		//等待寄存器同步完成
 		RTC_EnterConfigMode();		//进入RTC配置模式
