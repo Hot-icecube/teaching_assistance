@@ -34,11 +34,11 @@ u8 RTC_Init(void)
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_BKP | RCC_APB1Periph_PWR, ENABLE);		//使能BKP,PWR
 	PWR_BackupAccessCmd(ENABLE);		//PWR后备寄存器访问
 
-	if(BKP_ReadBackupRegister(BKP_DR1) != 0X50)			//初次设置时钟，若需掉电后仍计时讲数值改为0X5050
+	if(BKP_ReadBackupRegister(BKP_DR1) != 0X5050)			//初次设置时钟，若需掉电后仍计时讲数值改为0X5050
 	{
 		BKP_DeInit();
 		//RTC时钟源选择
-		RCC_LSEConfig(RCC_LSE_ON);		//开启外部低速震荡器
+		RCC_LSEConfig(RCC_LSE_ON);		//开启外部低速晶振（LSE）
 		while(RCC_GetFlagStatus(RCC_FLAG_LSERDY) == RESET && temp<250)
 		{
 			temp++;
@@ -53,14 +53,15 @@ u8 RTC_Init(void)
 		RTC_ITConfig(RTC_IT_SEC, ENABLE);	
 		RTC_WaitForLastTask();
 		RTC_WaitForSynchro();		//等待寄存器同步完成
-		RTC_EnterConfigMode();		//进入RTC配置模式
 		
+		RTC_EnterConfigMode();		//进入RTC配置模式
 		// RTC period = RTCCLK/RTC_PR = (32.768 KHz)/(32767+1) = 1HZ */
 		RTC_SetPrescaler(32767);	//RTC预分频值，
 		RTC_WaitForLastTask();
+		
 		RTC_SetTime(2022,8,20,15,18,50);
 		RTC_ExitConfigMode();		//退出配置模式
-		BKP_WriteBackupRegister(BKP_DR1, 0X5050);	//向指定的后备寄存器中写入用户程序数据
+		BKP_WriteBackupRegister(BKP_DR1, 0X50);	//向指定的后备寄存器中写入用户程序数据
 	}
 	else		//系统已初始化 继续计时
 	{
@@ -80,7 +81,7 @@ void RTC_IRQHandler(void)
 	if(RTC_GetITStatus(RTC_IT_SEC) != RESET)	RTC_GetTime();//秒钟中断
 	if(RTC_GetITStatus(RTC_IT_ALR) != RESET)
 	{
-		RTC_ClearITPendingBit(RTC_IT_ALR);
+		RTC_ClearITPendingBit(RTC_IT_ALR);//清除闹钟中断
 		RTC_GetTime();
 		printf("Alarm Time:%d-%d-%d %d:%d:%d\n",calendar.year,calendar.month,calendar.date,
 												calendar.hour,calendar.min,calendar.sec);//输出闹铃时间
@@ -153,7 +154,7 @@ u8 RTC_SetTime(u16 year,u8 month,u8 day,u8 hour, u8 min,u8 sec)
 {
 	u16 t;
 	u16 secCount;
-	if(year<1970 || year>2099)	return 1;
+	if(year<1970 || year>2099)	return 1;//参数错误，返回
 	for(t = 1970; t<year; t++)
 	{
 		if(Is_LeapYear(t))	secCount += SEC_LEAPYEAR;		//闰年366*24*3600
@@ -173,9 +174,8 @@ u8 RTC_SetTime(u16 year,u8 month,u8 day,u8 hour, u8 min,u8 sec)
 	//设置时钟
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR | RCC_APB1Periph_BKP, ENABLE);	//使能PWR和BKP外设时钟   
 	PWR_BackupAccessCmd(ENABLE);	//使能后备寄存器访问  
-	//上面三步是必须的!
+	RTC_SetCounter(secCount);
 	
-	RTC_SetAlarm(secCount);
 	RTC_WaitForLastTask();	//等待最近一次对RTC寄存器的写操作完成  	
 	return 0;
 }
@@ -211,7 +211,7 @@ u8 RTC_GetTime(void)
 					break;
 				}
 			}
-			tempDay -=365;		//获取平年秒数
+			else tempDay -=365;		//获取平年秒数
 			tempYear++;
 		}
 		calendar.year = tempYear;//得到年份
@@ -219,7 +219,7 @@ u8 RTC_GetTime(void)
 		tempYear = 0;
 		while(tempDay >= 28)
 		{
-			if(Is_LeapYear(calendar.year) && tempYear ==1)	//闰年/2月
+			if(Is_LeapYear(calendar.year) && tempYear ==1)	//闰年或2月
 			{
 				if(tempDay >=29 )	tempDay -= 29;	//闰年天数
 				else	break;	//
