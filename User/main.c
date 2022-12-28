@@ -12,12 +12,12 @@
 #include "hc05.h"
 #include "string.h"
 #include "GBK_LibDrive.h"
-#include "rtc.h"
+#include "tim.h"
 #include "key.h"
 
 #define LINE_SIZE		 16
 
-extern calendar_ calendar;
+
 
 //显示ATK-HC05模块的连接状态
 void HC05_Sta_Show(void)
@@ -27,12 +27,30 @@ void HC05_Sta_Show(void)
 }	
 
 
+//返回值：1， 到达预设值，其他-
+u8 Is_TimeOut()
+{
+	u8 now_time;
+	now_time = counter.hour*38400+counter.min*60+counter.sec;
+	if(now_time	> counter_value)	//计时达到预设值
+	{
+		now_time = 0;
+		
+		return 1;
+	}
+	return 0;
+}
+
+
 int main(void)
 {
 	u8 reclen = 0; //接收数据长度
 	u8 line = 62;//显示行数
 	u8 receive_num = 0;//接收次数，首次/非首次
 	u8 key = 0;
+	u8 key_press = 0;
+	
+	
 	
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_1);//中断优先级2：2
 	uart_init(115200);//串口1 初始化
@@ -43,7 +61,7 @@ int main(void)
 	printf("FLAHS_ID:0X%X\r\n",W25Qxx_ReadID());
 	GBK_Lib_Init();//硬件GBK字库初始化
 	KEY_Init();
-	RTC_Init();
+	TIM_Init(9999,7199);//10Khz的计数频率,  延时1s == 1000 000us 
 	
 	
 	delay_ms(100);
@@ -76,34 +94,39 @@ int main(void)
 	GBK_Show_Str(5, 46, 200,300,(u8*)"接收数据为：",16, RED, WHITE, 0);
 	memset(USART3_RX_BUF, 0, sizeof(USART3_RX_BUF));//清空数组内元素，使其为0
 	
-	RTC_SetTime(2022,12,23,18,50,00);//
-	RTC_SetClock(2022,12,23,19,00,00);
-	LCD_ShowString(60,130,200,16,16,RED,"    -  -  ");	   
-	LCD_ShowString(60,162,200,16,16,RED,"  :  :  ");
 	
 	while(1)
 	{
-		LCD_ShowNum(60,130,calendar.year,4,16,RED);									  
-		LCD_ShowNum(100,130,calendar.month,2,16,RED);									  
-		LCD_ShowNum(124,130,calendar.date,2,16,RED);
-		
-		LCD_ShowNum(60,162,calendar.hour,2,16,RED);									  
-		LCD_ShowNum(80,162,calendar.min,2,16,RED);									  
-		LCD_ShowNum(108,162,calendar.sec,2,16,RED);
-		
-		
-		key = KEY_Scan(0);
-		if(key == 1)
+  		key = KEY_Scan(1);
+		if(key == KEY0_PRES)
 		{
-			printf("key0 press\n");
-			
-			
+			if(key_press == 0)	//第一次按下，开始计时
+			{
+				key_press = 1;//按键状态反转
+				TIM_Set(TIM4,ENABLE);//开定时器
+			}
+			else	//暂停计时
+			{
+				key_press = 0;//按键状态反转
+				TIM_Set(TIM4,DISABLE);//关闭定时器
+				
+			}
 		}
 		
-//		LCD_ShowNum(100,100,calendar.min,2,16,RED);
-//		GBK_Show_Str(104,100,100,200,":",16, RED, WHITE, 0);
-//		LCD_ShowNum(110,100,calendar.sec,2,16,RED);
-	}
+		counter_value = 60;
+		if(Is_TimeOut())
+		{
+			TIM_Set(TIM4,DISABLE);
+		    printf("time out !!! nowtime is %d\n",counter.sec);
+			counter.hour = counter.min = counter.sec = 0;
+		
+		}			
+		
+		LCD_ShowxNum(80,220,counter.min,2,16,RED,0);//显示分钟
+		LCD_ShowxNum(100,220,counter.sec,2,16,RED,0);//显示秒
+		
+		
+	}	//while(1)
 //	while(1)
 //	{
 //		HC05_Sta_Show();//显示连接状态
@@ -138,7 +161,7 @@ int main(void)
 //		
 
 //		
-//	}
+//	}//while(1)
 	
 }
 

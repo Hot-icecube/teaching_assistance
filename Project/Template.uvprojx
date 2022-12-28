@@ -334,7 +334,7 @@
               <MiscControls></MiscControls>
               <Define>USE_STDPERIPH_DRIVER,STM32F10X_HD</Define>
               <Undefine></Undefine>
-              <IncludePath>..\Libraries\CMSIS;..\Libraries\FWLib\inc;..\User;..\System\usart;..\System\sys;..\System\delay;..\HardWare\LCD;..\HardWare\W25Qxx_SPI_FLASH;..\FatFs\exfuns;..\FatFs\src;..\Malloc;..\TEXT;..\HardWare\RTC;..\HardWare\HC05;..\HardWare\USART3;..\HardWare\USART2;..\HardWare\GBK_LibDrive;..\HardWare\KEY</IncludePath>
+              <IncludePath>..\Libraries\CMSIS;..\Libraries\FWLib\inc;..\User;..\System\usart;..\System\sys;..\System\delay;..\HardWare\LCD;..\HardWare\W25Qxx_SPI_FLASH;..\FatFs\exfuns;..\FatFs\src;..\Malloc;..\TEXT;..\HardWare\RTC;..\HardWare\HC05;..\HardWare\USART3;..\HardWare\USART2;..\HardWare\GBK_LibDrive;..\HardWare\KEY;..\HardWare\TIM</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -433,14 +433,14 @@
               <FilePath>..\HardWare\LCD\font.c</FilePath>
             </File>
             <File>
-              <FileName>rtc.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HardWare\RTC\rtc.c</FilePath>
-            </File>
-            <File>
               <FileName>key.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HardWare\KEY\key.c</FilePath>
+            </File>
+            <File>
+              <FileName>tim.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HardWare\TIM\tim.c</FilePath>
             </File>
           </Files>
         </Group>

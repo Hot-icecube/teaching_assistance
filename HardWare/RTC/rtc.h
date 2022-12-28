@@ -24,11 +24,12 @@ extern calendar_ calendar;
 
 
 
+
 void RTC_NVIC_Init(void);
 u8 RTC_Init(void);
 void RTC_IRQHandler(void);
 	
-u8 Is_LeapYear(u16 year);	//闰年返回1
+u8 Is_LeapYear(u16 year);	//是闰年返回1
 u8 RTC_GetWeek(u16 year, u8 month, u8 day);
 u8 RTC_SetTime(u16 year,u8 month,u8 day,u8 hour, u8 min,u8 sec);
 u8 RTC_GetTime(void);
