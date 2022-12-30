@@ -10,6 +10,25 @@ u8 USART3_RX_BUF[USART3_MAX_RECV_LEN]; 				//½ÓÊÕ»º³å,×î´óUSART3_MAX_RECV_LEN¸ö×
 u8  USART3_TX_BUF[USART3_MAX_SEND_LEN]; 			//·¢ËÍ»º³å,×î´óUSART3_MAX_SEND_LEN×Ö½Ú
 
 
+
+//¶Ô½ÓÊÕµÄÊý¾ÝÌáÈ¡
+u8 mesg_Analysis(message_obj *mesg, u8 *buf)
+{
+	u8 *p;
+	u8 len,i;
+	p = buf;
+	len = strlen((const char*)buf);
+	mesg->time =(buf[0]-'0')*100+(buf[1]-'0')*10+(buf[2]-'0');	//¼õ¡®0¡¯²Ù×÷£¬½«×Ö·ûÐÍ×ªÎªÊýÖµÐÍ½øÐÐÔËËã
+	
+	for(i=0; i<len; i++)
+	{
+		mesg->text[i] = buf[i+3];
+	}
+	
+	return  0;
+}
+
+
 //Í¨¹ýÅÐ¶Ï½ÓÊÕÁ¬Ðø2¸ö×Ö·ûÖ®¼äµÄÊ±¼ä²î²»´óÓÚ10msÀ´¾ö¶¨ÊÇ²»ÊÇÒ»´ÎÁ¬ÐøµÄÊý¾Ý.
 //Èç¹û2¸ö×Ö·û½ÓÊÕ¼ä¸ô³¬¹ý10ms,ÔòÈÏÎª²»ÊÇ1´ÎÁ¬ÐøÊý¾Ý.Ò²¾ÍÊÇ³¬¹ý10msÃ»ÓÐ½ÓÊÕµ½
 //ÈÎºÎÊý¾Ý,Ôò±íÊ¾´Ë´Î½ÓÊÕÍê±Ï.

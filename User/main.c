@@ -17,6 +17,9 @@
 
 #define LINE_SIZE		 16
 
+//接收的信息分为两部分存储 ，时间和待显示的文本
+message_obj receive_BUF[10];
+
 
 
 //显示ATK-HC05模块的连接状态
@@ -27,20 +30,6 @@ void HC05_Sta_Show(void)
 }	
 
 
-//返回值：1， 到达预设值，其他-
-u8 Is_TimeOut()
-{
-	u8 now_time;
-	now_time = counter.hour*38400+counter.min*60+counter.sec;
-	if(now_time	> counter_value)	//计时达到预设值
-	{
-		now_time = 0;
-		
-		return 1;
-	}
-	return 0;
-}
-
 
 int main(void)
 {
@@ -49,7 +38,7 @@ int main(void)
 	u8 receive_num = 0;//接收次数，首次/非首次
 	u8 key = 0;
 	u8 key_press = 0;
-	
+	u8 temp[50];
 	
 	
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_1);//中断优先级2：2
@@ -97,7 +86,48 @@ int main(void)
 	
 	while(1)
 	{
-  		key = KEY_Scan(1);
+		HC05_Sta_Show();//显示连接状态
+
+		if(USART3_RX_STA & 0x8000)	//接收到一次数据
+		{	
+			reclen = USART3_RX_STA&0X7FFF;	//得到数据长度
+			USART3_RX_BUF[reclen] = 0;//添加结束符
+			USART3_RX_STA = 0;//清除接收标志位
+			
+			
+			mesg_Analysis(receive_BUF,USART3_RX_BUF);
+//			sprintf((char*)temp,"%d\n",receive_BUF[0].time);
+//			puts((char*)temp);
+			printf("time:%d ,text:%s\n",receive_BUF[0].time,receive_BUF[0].text);
+			
+			if(receive_num == 0)//第一次接收
+			{
+				receive_num++;
+			}
+			else//再次接收
+			{
+				line += LINE_SIZE;//显示位置下移
+				receive_num++;
+			}
+			printf("receive: %s,strlen： %d\n",USART3_RX_BUF,strlen((const char*)USART3_RX_BUF));
+		}
+	
+		
+		
+		GBK_Show_Str(8,line, 500,500,  USART3_RX_BUF,16, RED, WHITE, 0);
+		
+		if(receive_num >13)	
+		{
+			LCD_Clear(WHITE);
+			GBK_Show_Str(50,30, 200,300,"格林贝演讲辅助系统",16, RED, WHITE, 0);
+			GBK_Show_Str(5, 46, 200,300,"接收数据为：",16, RED, WHITE, 0);
+			receive_num = 0;
+			line = 62;
+		}
+		//memset(USART3_RX_BUF, 0, sizeof(USART3_RX_BUF));//清空数组内元素，使其为0		
+
+		//按键按下
+		key = KEY_Scan(1);
 		if(key == KEY0_PRES)
 		{
 			if(key_press == 0)	//第一次按下，开始计时
@@ -111,57 +141,21 @@ int main(void)
 				TIM_Set(TIM4,DISABLE);//关闭定时器
 				
 			}
-		}
-		
-		counter_value = 60;
-		if(Is_TimeOut())
+		} 
+
+		if(Is_TimeOut(30))	//判断是否已经到达设定时间
 		{
 			TIM_Set(TIM4,DISABLE);
-		    printf("time out !!! nowtime is %d\n",counter.sec);
+		    printf(" time out !!! nowtime is %d\n",counter.sec);
 			counter.hour = counter.min = counter.sec = 0;
 		
 		}			
 		
 		LCD_ShowxNum(80,220,counter.min,2,16,RED,0);//显示分钟
 		LCD_ShowxNum(100,220,counter.sec,2,16,RED,0);//显示秒
-		
-		
-	}	//while(1)
-//	while(1)
-//	{
-//		HC05_Sta_Show();//显示连接状态
 
-//		if(USART3_RX_STA & 0x8000)	//接收到一次数据
-//		{	
-//			reclen = USART3_RX_STA&0X7FFF;	//得到数据长度
-//			USART3_RX_BUF[reclen] = 0;//添加结束符
-//			USART3_RX_STA = 0;//清除接收标志位
-//			
-//			if(receive_num == 0)//第一次接收
-//			{
-//				receive_num++;
-//			}
-//			else//再次接收
-//			{
-//				line += LINE_SIZE;//显示位置下移
-//				receive_num++;
-//			}
-//		}	
-//		GBK_Show_Str(8,line, 500,500,  USART3_RX_BUF,16, RED, WHITE, 0);
-//		
-//		if(receive_num >13)	
-//		{
-//			LCD_Clear(WHITE);
-//			GBK_Show_Str(50,30, 200,300,"格林贝演讲辅助系统",16, RED, WHITE, 0);
-//			GBK_Show_Str(5, 46, 200,300,"接收数据为：",16, RED, WHITE, 0);
-//			receive_num = 0;
-//			line = 62;
-//		}
-//		memset(USART3_RX_BUF, 0, sizeof(USART3_RX_BUF));//清空数组内元素，使其为0						
-//		
-
-//		
-//	}//while(1)
+		
+	}//while(1)
 	
 }
 

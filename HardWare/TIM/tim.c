@@ -1,8 +1,23 @@
 #include "tim.h"
 #include "usart.h"
 
-counter_obj counter;
-u8 counter_value = 0;	//设置的定时时间，以s为单位
+counter_obj counter;	//计数器
+
+//set_value:设定的时间，
+//返回值：1， 到达预设值，其他-
+u8 Is_TimeOut(u16 set_value)
+{
+	u8 now_time;
+	now_time = counter.hour*38400+counter.min*60+counter.sec;
+	if(now_time	> set_value)	//计时达到预设值
+	{
+		now_time = 0;
+		
+		return 1;
+	}
+	return 0;
+}
+
 
 void  TIM_Init(u32 arr,u32 psc)
 {
