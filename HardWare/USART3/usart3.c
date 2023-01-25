@@ -14,11 +14,11 @@ u8  USART3_TX_BUF[USART3_MAX_SEND_LEN]; 			//·¢ËÍ»º³å,×î´óUSART3_MAX_SEND_LEN×Ö½
 //¶Ô½ÓÊÕµÄÊý¾ÝÌáÈ¡
 u8 mesg_Analysis(message_obj *mesg, u8 *buf)
 {
-	u8 *p;
 	u8 len,i;
-	p = buf;
 	len = strlen((const char*)buf);
-	mesg->time =(buf[0]-'0')*100+(buf[1]-'0')*10+(buf[2]-'0');	//¼õ¡®0¡¯²Ù×÷£¬½«×Ö·ûÐÍ×ªÎªÊýÖµÐÍ½øÐÐÔËËã
+	mesg->total_time =(buf[0]-'0')*100+(buf[1]-'0')*10+(buf[2]-'0');	//¼õ¡®0¡¯²Ù×÷£¬½«×Ö·ûÐÍ×ªÎªÊýÖµÐÍ½øÐÐÔËËã
+	mesg->time_min = mesg->total_time/60;
+	mesg->time_sec = mesg->total_time%60;
 	
 	for(i=0; i<len; i++)
 	{
