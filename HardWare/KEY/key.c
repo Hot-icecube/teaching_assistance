@@ -94,13 +94,13 @@ void EXTI4_IRQHandler()
 				TIM_Set(TIM4,ENABLE);//开定时器
 				start_show = 1;
 	
-				printf("key0 is press\n");
+//				printf("key0 is press\n");
 			}
 			else	//暂停计时
 			{
 				key_press = 0;//按键状态反转
 				TIM_Set(TIM4,DISABLE);//关闭定时器
-				printf("key0 is press again\n");
+//				printf("key0 is press again\n");
 			}	
 
 		}

@@ -4,9 +4,9 @@
 #include "stm32f10x.h"
 
 typedef struct{
-	vu8 hour;
-	vu8 min;
-	vu8 sec;
+	u8 hour;
+	u8 min;
+	u8 sec;
 }counter_obj;
 
 extern counter_obj counter;
