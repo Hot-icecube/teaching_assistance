@@ -120,7 +120,7 @@ int main(void)
 			}
 			
 			
-			printf("receive_num: %d,\t total_time:%d,\t text:%s\r\n",\
+			//printf("receive_num: %d,\t total_time:%d,\t text:%s\r\n",\
 					receive_num-1, mesg_RX_BUF[receive_num].total_time, mesg_RX_BUF[receive_num].text);
 			
 			printf("receive: %s,\t strlen£º %d\r\n",USART3_RX_BUF,strlen((const char*)USART3_RX_BUF));
