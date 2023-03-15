@@ -63,9 +63,9 @@ typedef struct
 //支持横竖屏快速定义切换
 
 
-#define LCD_DIR_Mode  	  0	    //4种工作模式，0和1是竖屏模式，2和3是横屏模式
+#define LCD_DIR_Mode  	  3	    //4种工作模式，0和1是竖屏模式，2和3是横屏模式
 
-#define USE_HORIZONTAL  	0     //方向设置： 		0,竖屏模式   1,横屏模式.
+#define USE_HORIZONTAL  	1     //方向设置： 		0,竖屏模式   1,横屏模式.
 
 
 //画笔颜色
