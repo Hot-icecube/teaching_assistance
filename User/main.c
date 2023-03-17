@@ -18,7 +18,7 @@
 
 
 //接收的信息分为两部分存储 ，时间和待显示的文本
-message_obj mesg_RX_BUF[20];
+message_obj mesg_RX_BUF[30];
 u8 start_show = 0;
 
 
@@ -111,14 +111,12 @@ int main(void)
 			}
 			if(receive_num >= 11)	
 			{
+				receive_num = 0;
+				line = 58;
 				LCD_Clear(WHITE);
 				GBK_Show_Str(5, 26, 200,300,"接收数据条数:",16, RED, WHITE, 0);
-				
-				receive_num = 0;
 				memset(mesg_RX_BUF, 0, sizeof(mesg_RX_BUF));//清空数组内元素，使其为0	
-				line = 58;
 			}
-			
 			
 			//printf("receive_num: %d,\t total_time:%d,\t text:%s\r\n",\
 					receive_num-1, mesg_RX_BUF[receive_num].total_time, mesg_RX_BUF[receive_num].text);
@@ -132,17 +130,14 @@ int main(void)
 		LCD_ShowxNum(115,26,receive_num,2,16,RED,0);
 		//memset(USART3_RX_BUF, 0, sizeof(USART3_RX_BUF));//清空数组内元素，使其为0
 		Counter_Show();
-		
-
-	
-		
+			
 		if(start_show == 1)
 		{
 			i=1;
 			while(i <= receive_num)
 			{
 				Counter_Show();
-				if( !Is_TimeOut(mesg_RX_BUF[i-1].total_time) )	//计时未到,
+				if( !Is_TimeOut(mesg_RX_BUF[i-1].total_time) )	//计时未到
 				{
 //					printf("mesg_RX_BUF[%d].total_time :%d\n",i,mesg_RX_BUF[i].total_time);
 					//显示接收的时间及内容
@@ -151,7 +146,7 @@ int main(void)
 					LCD_ShowxNum(50,line,mesg_RX_BUF[i-1].time_sec,2,16,RED,0);//显示秒
 					GBK_Show_Str(70,line, 200,200,(u8*)&mesg_RX_BUF[i-1].text,16,BLUE, WHITE, 0);
 				}			
-				else	//计时到
+				else //计时到
 				{
 //					printf("mesg_RX_BUF[%d].total_time :%d\n",i,mesg_RX_BUF[i].total_time);
 //					printf(" total_time out !!! nowtime is %d : %d\r\n",counter.min,counter.sec);
@@ -160,18 +155,16 @@ int main(void)
 					line += LINE_SIZE;//显示位置下移	
 					
 				}
-				/*最后一条信息显示完毕，时间已至 */
-				if(i==receive_num && Is_TimeOut( mesg_RX_BUF[i-1].total_time) )
+				/* 最后一条信息显示完毕，且计时完毕 */
+				if( i==receive_num && Is_TimeOut(mesg_RX_BUF[i-1].total_time) )
 				{
 					//i=0;
-					memset(mesg_RX_BUF, 0, sizeof(mesg_RX_BUF));//清空数组内元素，使其为0
-					TIM_Set(TIM4,DISABLE);
 					line = 58;
+					TIM_Set(TIM4,DISABLE);
 					counter.hour = counter.min = counter.sec = 0;
-					start_show = 0;
 					printf("Ending show\n");
-					
-					//闪屏
+					 
+					//闪屏提醒
 					for(j=0;j<8;j++)
 					{
 						LCD_LED=0;
@@ -179,23 +172,12 @@ int main(void)
 						LCD_LED=1;
 						delay_ms(300);
 					}
-					
-//					for(j=0;j<5;j++)
-//					{
-//						//LCD_Color_Fill();
-//						LCD_Fill(0,0,400,400,BLACK);
-//						delay_ms(1000);
-//						LCD_Fill(0,0,40-0,400,WHITE);
-//						delay_ms(1000);
-//					}
 					break;
-					
-				
 				}
 				
-			}
+			}//while(i<=receive_num)
 			
-			
+			start_show = 0;
 		}
 		
 	

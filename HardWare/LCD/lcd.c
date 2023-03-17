@@ -4,6 +4,7 @@
 #include "usart.h"	 
 #include "delay.h"	
 #include "text.h"
+#include "GBK_LibDrive.h"
 
 //STM32F103ZE核心板
 //2.4寸/2.8寸/3.2寸  TFT液晶驱动	  
@@ -546,7 +547,7 @@ void LCD_Init(void)
 	LCD_Display_Dir(LCD_DIR_Mode);	//选择--屏幕显示方式
 	LCD_LED=1;				//点亮背光
 	LCD_Clear(WHITE);
-	
+
 	
 }  
 
@@ -702,7 +703,6 @@ void LCD_Draw_Circle(u16 x0,u16 y0,u8 r, u16 Color)
 }	
 
 
-/*******************************************************************************/
 //函数：LCD_ShowChar(u16 x,u16 y,u8 num,u8 size,u16 color,u8 mode)
 //函数功能：在指定位置显示一个字符
 //输入参数：
@@ -922,4 +922,7 @@ void Color_Test(void)
 	LCD_Clear(BLUE);
 	delay_ms(500);//延时
 }
+
+
+
 

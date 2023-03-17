@@ -11,13 +11,14 @@
 //接收的消息分为，时间和文本
 typedef struct{
 	u16 total_time;	//总秒数
+	
 	u8 time_sec;	//分
 	u8 time_min;	//秒
 	u8 text[1024];
 }message_obj;
 
 
-extern  message_obj mesg_RX_BUF[20];
+extern  message_obj mesg_RX_BUF[30];
 
 
 extern u8  USART3_RX_BUF[USART3_MAX_RECV_LEN]; 		//接收缓冲,最大USART3_MAX_RECV_LEN字节
