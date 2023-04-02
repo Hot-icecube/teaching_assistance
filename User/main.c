@@ -14,12 +14,17 @@
 #include "tim.h"
 #include "key.h"
 
-#define LINE_SIZE		 16
+		
+#define LINE_SIZE		 	24
+#define FONT_SIZE			24
+#define MAX_LINE			7
+			
 
 
 //接收的信息分为两部分存储 ，时间和待显示的文本
-message_obj mesg_RX_BUF[30];
+message_obj mesg_RX_BUF[MESSAGE_MAX_SIZE];
 u8 start_show = 0;
+key_table line_local={0,0,0};
 
 
 //显示ATK-HC05模块的连接状态
@@ -31,9 +36,11 @@ void HC05_Sta_Show(void)
 
 void Counter_Show(void)
 {
-	LCD_ShowxNum(100,42,counter.min,2,16,RED,0);//显示分钟
-	GBK_Show_Str(45,42,200,200,"计时器   :   ",16, RED, WHITE, 1);
-	LCD_ShowxNum(135,42,counter.sec,2,16,RED,0);//显示秒
+	LCD_ShowxNum(85,42,counter.hour,2,16,RED,0);//显示小时
+	GBK_Show_Str(30,42,200,200,"计时器:",16, RED, WHITE, 0);
+	GBK_Show_Str(100,42,200,200,"	:	  : 	",16, RED, WHITE, 0);
+	LCD_ShowxNum(120,42,counter.min,2,16,RED,0);//显示分钟
+	LCD_ShowxNum(150,42,counter.sec,2,16,RED,0);//显示秒
 }
 
 int main(void)
@@ -41,10 +48,18 @@ int main(void)
 	u8 reclen = 0; //接收数据长度
 	u8 line = 58;	//开始显示的行数
 	u8 receive_num = 0;//接收次数，首次/非首次
-//	u8 key = 0;
-//	u8 key_press = 0;
+	u16 time_color = BLACK;
+	u16 text_color= BLUE;
+	//u16 back_color = WHITE;
+	counter_obj temp_counter[MESSAGE_MAX_SIZE];
+	u8 temp_buf[1024];		//缓冲区
+	u16 len;
+	
 	u8 i = 0;
 	u8 j = 0;
+	u8 x = 0;
+	u8 time_out_flag = 0;
+	u8 last_current=0;
 	
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_1);//中断优先级2：2
 	uart_init(115200);//串口1 初始化
@@ -84,11 +99,11 @@ int main(void)
 	
 	LCD_Clear(WHITE);
 
-
-	GBK_Show_Str(5, 26, 200,300,(u8*)"接收数据条数：",16, RED, WHITE, 0);
+	
+	
 	memset(USART3_RX_BUF, 0, sizeof(USART3_RX_BUF));//清空数组内元素，使其为0
-	
-	
+		
+		
     while(1)
 	{
 		HC05_Sta_Show();//显示连接状态
@@ -100,23 +115,7 @@ int main(void)
 			USART3_RX_STA = 0;//清除接收标志位
 			
 			mesg_Analysis(&mesg_RX_BUF[receive_num], USART3_RX_BUF);
-			
-			if(receive_num == 0)//第一次接收
-			{
-				receive_num++;
-			}
-			else//再次接收
-			{
-				receive_num++;
-			}
-			if(receive_num >= 11)	
-			{
-				receive_num = 0;
-				line = 58;
-				LCD_Clear(WHITE);
-				GBK_Show_Str(5, 26, 200,300,"接收数据条数:",16, RED, WHITE, 0);
-				memset(mesg_RX_BUF, 0, sizeof(mesg_RX_BUF));//清空数组内元素，使其为0	
-			}
+			receive_num++;
 			
 			//printf("receive_num: %d,\t total_time:%d,\t text:%s\r\n",\
 					receive_num-1, mesg_RX_BUF[receive_num].total_time, mesg_RX_BUF[receive_num].text);
@@ -125,67 +124,101 @@ int main(void)
 			
 		}
 		
-	
 		//显示接收次数
+		GBK_Show_Str(5, 26, 200,300,(u8*)"接收数据条数：",16, RED, WHITE, 0);
 		LCD_ShowxNum(115,26,receive_num,2,16,RED,0);
 		//memset(USART3_RX_BUF, 0, sizeof(USART3_RX_BUF));//清空数组内元素，使其为0
 		Counter_Show();
 			
-		if(start_show == 1)
+		if(start_show == 1)//开始计时
 		{
+			
 			i=1;
 			while(i <= receive_num)
-			{
-				Counter_Show();
-				if( !Is_TimeOut(mesg_RX_BUF[i-1].total_time) )	//计时未到
-				{
-//					printf("mesg_RX_BUF[%d].total_time :%d\n",i,mesg_RX_BUF[i].total_time);
-					//显示接收的时间及内容
-					LCD_ShowxNum(10,line,mesg_RX_BUF[i-1].time_min,2,16,RED,0);//显示分钟
-					GBK_Show_Str(30,line,200,200," : ",16, RED, WHITE, 0);
-					LCD_ShowxNum(50,line,mesg_RX_BUF[i-1].time_sec,2,16,RED,0);//显示秒
-					GBK_Show_Str(70,line, 200,200,(u8*)&mesg_RX_BUF[i-1].text,16,BLUE, WHITE, 0);
-				}			
-				else //计时到
-				{
-//					printf("mesg_RX_BUF[%d].total_time :%d\n",i,mesg_RX_BUF[i].total_time);
-//					printf(" total_time out !!! nowtime is %d : %d\r\n",counter.min,counter.sec);
-					counter.hour = counter.min = counter.sec = 0;
-					i++;
-					line += LINE_SIZE;//显示位置下移	
+			{                            
+				Counter_Show();//计时器显示
+				LCD_ShowxNum(5,line,mesg_RX_BUF[i-1].time_min,2,24,time_color,0);//显示分钟
+				GBK_Show_Str(28,line,200,200,(u8*)" : ",16, time_color, WHITE, 0);
+				LCD_ShowxNum(50,line,mesg_RX_BUF[i-1].time_sec,2,24,time_color,0);//显示秒
+				GBK_Show_Str(85,line, 200,200,(u8*)&mesg_RX_BUF[i-1].text,24,text_color, WHITE, 0);//显示文本
+				
+				if(i == line_local.current) //指向当前行，特殊显示
+				{									
+					time_color = RED;
+					text_color = RED;
+					line += LINE_SIZE;
 					
+					//记录切换时的时间
+					temp_counter[i-1].hour = counter.hour;
+					temp_counter[i-1].min = counter.min;
+					temp_counter[i-1].sec = counter.sec;
+					
+					//printf("hour:%d\t min:%d\t sec:%d\t\n",\
+							(int)temp_counter[i-1].hour,(int)temp_counter[i-1].min,(int)temp_counter[i-1].sec);
+					i++;	
 				}
-				/* 最后一条信息显示完毕，且计时完毕 */
-				if( i==receive_num && Is_TimeOut(mesg_RX_BUF[i-1].total_time) )
+				else
 				{
-					//i=0;
-					line = 58;
-					TIM_Set(TIM4,DISABLE);
-					counter.hour = counter.min = counter.sec = 0;
-					printf("Ending show\n");
-					 
-					//闪屏提醒
-					for(j=0;j<8;j++)
+					time_color = BLACK;
+					text_color= BLUE;
+					
+								
+				}
+				//时间是否到达设定值
+				time_out_flag = Is_TimeOut(mesg_RX_BUF[x].time_min, mesg_RX_BUF[x].time_sec);
+				if(time_out_flag == 1)
+				{
+					x++;
+					//闪屏
+					for(j=0;j<3;j++)
 					{
 						LCD_LED=0;
-						delay_ms(300);
+						delay_ms(200);
 						LCD_LED=1;
-						delay_ms(300);
+						delay_ms(200);
 					}
-					break;
+					if(x+1 >= receive_num)	
+					{
+						time_out_flag = 2;
+						break;
+					}
+				}	
+				if(line_local.current%MAX_LINE == 0 && line_local.current!=0)	//指向页尾,开始下一页显示
+				{	
+					if (line_local.current != last_current)//如果相等，说明当前已经执行过 LCD_Clear，不需要再次执行
+					{
+						last_current = line_local.current;
+						LCD_Clear(WHITE);					
+						line=58;
+					}
 				}
+				
 				
 			}//while(i<=receive_num)
 			
-			start_show = 0;
+			if(start_show!=1 || i>=receive_num)//发送计时数据
+			{
+				//len=sizeof(temp_counter)/sizeof(temp_counter[0]);
+				for(i=1; i<=receive_num; i++)
+				{
+					sprintf((char *)temp_buf,"hour:%d,min:%d,sec:%d\n",\
+							temp_counter[i-1].hour,temp_counter[i-1].min,temp_counter[i-1].sec);
+					u3_printf("%s\n",temp_buf);
+					printf("%s\n",temp_buf);
+					delay_us(500);
+				}
+				start_show = 0;//标志清0
+				//printf("%s\n",temp_buf);
+				
+			}		
 		}
 		
 	
-
-		
 	}//while(1)
-	
 }
+
+
+
 
 
 

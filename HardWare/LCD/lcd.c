@@ -6,9 +6,9 @@
 #include "text.h"
 #include "GBK_LibDrive.h"
 
-//STM32F103ZE核心板
-//2.4寸/2.8寸/3.2寸  TFT液晶驱动	  
-//支持驱动IC型号包括:ILI9341等	
+
+//2.4寸/2.8寸/3.2寸 
+//驱动IC:ILI9341等	
 
 //LCD的画笔颜色和背景色	   
 u16 POINT_COLOR=BLACK;	//画笔颜色
@@ -17,6 +17,7 @@ u16 BACK_COLOR=WHITE;  //背景色
 //管理LCD重要参数
 //默认为竖屏
 _lcd_dev lcddev;
+
 
 //写寄存器函数
 //regval:寄存器值
@@ -655,9 +656,7 @@ void LCD_DrawLine(u16 x1, u16 y1, u16 x2, u16 y2, u16 Color)
 } 
 
 
-//函数：void LCD_DrawLine(u16 x1, u16 y1, u16 x2, u16 y2)
-//函数功能：画矩形	  
-//输入参数：
+//画矩形	  
 //(x1,y1),(x2,y2):矩形的对角坐标
 //Color;线条颜色
 
@@ -847,10 +846,10 @@ void LCD_ShowString(u16 x,u16 y,u16 width,u16 height,u8 size,u16 color,u8 *p)
 
 
 
-//函数：void DisplayButtonDown(u16 x1,u16 y1,u16 x2,u16 y2)
-//功能描述: 在屏幕显示一凸起的按钮框
-//输    入: u16 x1,y1,x2,y2 按钮框左上角和右下角坐标
-//输    出: 无
+
+// 在屏幕显示一凸起的按钮框
+//u16 x1,y1,x2,y2 按钮框左上角和右下角坐标
+// 无
 
 void DisplayButtonDown(u16 x1,u16 y1,u16 x2,u16 y2)
 {
@@ -865,9 +864,8 @@ void DisplayButtonDown(u16 x1,u16 y1,u16 x2,u16 y2)
 
 
 
-//功能描述: 在屏幕显示一凹下的按钮框
-//输    入: u16 x1,y1,x2,y2 按钮框左上角和右下角坐标
-//输    出: 无
+//在屏幕显示一凹下的按钮框
+//u16 x1,y1,x2,y2 按钮框左上角和右下角坐标
 void DisplayButtonUp(u16 x1,u16 y1,u16 x2,u16 y2)
 {
 	LCD_DrawLine(x1,  y1,  x2,y1,WHITE);    //H
@@ -879,7 +877,7 @@ void DisplayButtonUp(u16 x1,u16 y1,u16 x2,u16 y2)
 }
 
 
-//功能描述: 绘制图形函数测试
+//绘制图形函数测试
 void Draw_Test(void)
 {
 	LCD_Clear(WHITE); //清屏
@@ -922,6 +920,7 @@ void Color_Test(void)
 	LCD_Clear(BLUE);
 	delay_ms(500);//延时
 }
+
 
 
 

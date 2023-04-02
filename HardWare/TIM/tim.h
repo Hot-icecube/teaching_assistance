@@ -17,7 +17,7 @@ extern counter_obj counter;
 void TIM_Init(u32 arr, u32 psc);
 u8 TIM_Set(TIM_TypeDef* TIMx, FunctionalState NewState);
 
-u8 Is_TimeOut(u16 set_value);
+u8 Is_TimeOut(u8 set_min, u8 set_sec);
 
 
 

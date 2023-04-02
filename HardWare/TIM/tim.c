@@ -5,16 +5,15 @@ counter_obj counter;	//计数器
 
 //set_value:设定的时间，
 //返回值：1， 到达预设值，0-未到计时值
-u8 Is_TimeOut(u16 set_time)
+u8 Is_TimeOut(u8 set_min, u8 set_sec)
 {
-	u8 now_time;
-	now_time = counter.hour*38400 + counter.min*60 + counter.sec;
-	if(now_time	>= set_time)	//计时达到预设值
+	if(counter.min > set_min) 	return 1;
+	else if(set_min == counter.min) 
 	{
-		now_time = 0;
-		
-		return 1;
+		if(counter.sec > set_sec)	return 1;
+		else return 0;
 	}
+		
 	return 0;
 }
 
@@ -55,7 +54,7 @@ void TIM4_IRQHandler()   //TIM3中断
 	}
 	
 	counter.sec++;	//
-	if(counter.sec == 60 || counter.min == 60)
+	if(counter.sec == 60 || counter.min == 60 )
 	{
 		if(counter.sec == 60)
 		{

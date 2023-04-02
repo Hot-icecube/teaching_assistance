@@ -334,7 +334,7 @@
               <MiscControls></MiscControls>
               <Define>USE_STDPERIPH_DRIVER,STM32F10X_HD</Define>
               <Undefine></Undefine>
-              <IncludePath>..\Libraries\CMSIS;..\Libraries\FWLib\inc;..\User;..\System\usart;..\System\sys;..\System\delay;..\HardWare\LCD;..\HardWare\W25Qxx_SPI_FLASH;..\FatFs\exfuns;..\FatFs\src;..\Malloc;..\TEXT;..\HardWare\RTC;..\HardWare\HC05;..\HardWare\USART3;..\HardWare\USART2;..\HardWare\GBK_LibDrive;..\HardWare\KEY;..\HardWare\TIM</IncludePath>
+              <IncludePath>..\Libraries\CMSIS;..\Libraries\FWLib\inc;..\User;..\System\usart;..\System\sys;..\System\delay;..\HardWare\LCD;..\HardWare\W25Qxx_SPI_FLASH;..\FatFs\exfuns;..\FatFs\src;..\Malloc;..\TEXT;..\HardWare\RTC;..\HardWare\HC05;..\HardWare\USART3;..\HardWare\USART2;..\HardWare\GBK_LibDrive;..\HardWare\KEY;..\HardWare\TIM;..\HardWare\LCD_Display</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -408,11 +408,6 @@
               <FilePath>..\HardWare\LCD\lcd.c</FilePath>
             </File>
             <File>
-              <FileName>w25qxx_spi_flash.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HardWare\W25Qxx_SPI_FLASH\w25qxx_spi_flash.c</FilePath>
-            </File>
-            <File>
               <FileName>usart3.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HardWare\USART3\usart3.c</FilePath>
@@ -441,6 +436,11 @@
               <FileName>tim.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HardWare\TIM\tim.c</FilePath>
+            </File>
+            <File>
+              <FileName>w25qxx_spi_flash.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HardWare\W25Qxx_SPI_FLASH\w25qxx_spi_flash.c</FilePath>
             </File>
           </Files>
         </Group>

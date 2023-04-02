@@ -5,9 +5,22 @@
 #include "sys.h"
 #include "stm32f10x.h"
 
-#define KEY0  GPIO_ReadInputDataBit(GPIOE,GPIO_Pin_4)//读取按键0
-#define KEY1  GPIO_ReadInputDataBit(GPIOE,GPIO_Pin_3)//读取按键1
-#define WK_UP   GPIO_ReadInputDataBit(GPIOA,GPIO_Pin_0)//读取按键3(WK_UP) 
+
+typedef struct
+{
+	u8 current;
+	u8 back;		//向上翻索引号
+	u8 next;		//向下翻索引号
+	
+} key_table;
+
+
+
+
+
+#define KEY0  	GPIO_ReadInputDataBit(GPIOE,GPIO_Pin_4)//读取按键0
+#define KEY1  	GPIO_ReadInputDataBit(GPIOE,GPIO_Pin_3)//读取按键1
+#define WK_UP 	GPIO_ReadInputDataBit(GPIOA,GPIO_Pin_0)//读取按键3(WK_UP) 
 
 
 #define KEY0_PRES 	1	//KEY0按下

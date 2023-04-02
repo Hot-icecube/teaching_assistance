@@ -6,6 +6,7 @@
 #define USART3_MAX_RECV_LEN		1024					//最大接收缓存字节数
 #define USART3_MAX_SEND_LEN		1024					//最大发送缓存字节数
 #define USART3_RX_EN 			1					//0,不接收;	1,接收.
+#define MESSAGE_MAX_SIZE		30				//最大存储容量 ，最大1024
 
 
 //接收的消息分为，时间和文本
@@ -18,7 +19,7 @@ typedef struct{
 }message_obj;
 
 
-extern  message_obj mesg_RX_BUF[30];
+extern  message_obj mesg_RX_BUF[MESSAGE_MAX_SIZE];
 
 
 extern u8  USART3_RX_BUF[USART3_MAX_RECV_LEN]; 		//接收缓冲,最大USART3_MAX_RECV_LEN字节

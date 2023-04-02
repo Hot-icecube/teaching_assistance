@@ -7,7 +7,7 @@
 	  
 //串口接收缓存区 	
 u8 USART3_RX_BUF[USART3_MAX_RECV_LEN]; 				//接收缓冲,最大USART3_MAX_RECV_LEN个字节.
-u8  USART3_TX_BUF[USART3_MAX_SEND_LEN]; 			//发送缓冲,最大USART3_MAX_SEND_LEN字节
+u8 USART3_TX_BUF[USART3_MAX_SEND_LEN]; 			//发送缓冲,最大USART3_MAX_SEND_LEN字节
 
 
 
@@ -16,13 +16,13 @@ u8 mesg_Analysis(message_obj *mesg, u8 *buf)
 {
 	u8 len,i;
 	len = strlen((const char*)buf);
-	mesg->total_time =(buf[0]-'0')*100+(buf[1]-'0')*10+(buf[2]-'0');	//减‘0’操作，将字符型转为数值型进行运算
-	mesg->time_min = mesg->total_time/60;
-	mesg->time_sec = mesg->total_time%60;
+	mesg->total_time =(buf[0]-'0')*600+(buf[1]-'0')*60+(buf[2]-'0')*10+(buf[3]-'0');	//减‘0’操作，将字符型转为数值型进行运算
+	mesg->time_min = (buf[0]-'0')*10+(buf[1]-'0');
+	mesg->time_sec = (buf[2]-'0')*10+(buf[3]-'0');
 	
 	for(i=0; i<len; i++)
 	{
-		mesg->text[i] = buf[i+3];
+		mesg->text[i] = buf[i+4];
 	}
 	
 	return  0;
